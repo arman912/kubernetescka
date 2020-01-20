@@ -1,0 +1,8 @@
+kubectl completion
+
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+Switch between Contexts
+
+kubectl config use-context
