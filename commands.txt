@@ -1,0 +1,89 @@
+                                        One line commands
+
+ENV
+--------
+kubectl Completetion
+
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+Switch between Contexts
+kubectl config use-context
+
+Swap to different context, e.g from the default to dev
+
+kubectl config set-context $(kubectl config get current context) --namespace=dev
+
+
+NAMESPACE
+---------
+
+kubectl get pods --namespace=kube-system
+
+kubectl create ns web
+
+----------
+
+Labels
+
+Label a Node
+kubectl label nodes <node-name> <label-key>=<label-value>
+
+Node-1 is labelled to large
+kubectl label nodes node-1 size=Large
+
+kubectl get pods --show-labels
+
+Show everthing labelled with prod
+kubectl get all --selector env=prod
+---------
+
+Taints
+---------
+Apply a taint to a node
+
+kubectl taint nodes node01 spray=mortein:NoSchedule
+
+Remove a taint from control server
+kubectl taint nodes master node-role.kubernetes.io/master:NoSchedule-
+
+-----------
+POD
+---------
+
+Create an NGINX Pod
+kubectl run --generator=run-pod/v1 nginx --image=nginx
+
+Generate POD Manifest YAML file (-o yaml)
+kubectl run --generator=run-pod/v1 nginx --image=nginx --dry-run -o yaml
+
+Create Busybox POD
+kubectl run --generator=run-pod/v1 busybox --image=busybox
+
+Create redis POD - labelled for db
+kubectl run --generator=run-pod/v1 redis --image=redis:alpine -l tier=db
+
+Deployments
+----------
+Create a deployment named myapp and scale to 3 replicas
+
+kubectl create deployment myapp --image=nginx
+kubectl scale deployment/myapp --replicas=5
+
+Service
+-----------
+Create Service expose port, its ClusterIP be default
+kubectl expose pod redis --port=6379 --name redis-service --dry-run -o yaml
+
+kubectl create service clusterip redis --tcp=6379:6379 --dry-run -o yaml
+
+Create Nodeport
+kubectl expose pod nginx --port=80 --name nginx-service --dry-run -o yaml
+kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run -o yaml
+
+
+
+
+
+
+

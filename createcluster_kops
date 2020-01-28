@@ -1,0 +1,6 @@
+# etcd cluster
+
+## HA Cluster
+
+kop create cluster --name=training.it-open.co.uk --state=s3://itopen-state --zones eu-west-2a,eu-west-2b,eu-west-2c --node-count=3 --node-size=t2.micro --master-size=t2.micro --dns-zone=training.it-open.co.uk
+
