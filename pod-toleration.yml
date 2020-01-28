@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myfirstpod
+spec:
+  containers:
+  - name: nginnxpod
+    image: nginx
+  tolerations:
+  - key: prodnodes
+    value: rednode
+    effect: NoSchedule
+    operator: Equal
