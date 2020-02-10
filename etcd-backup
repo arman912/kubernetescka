@@ -1,0 +1,67 @@
+etcd backups
+-------------
+
+ETCDCTL_API=3 etcdctl --endpoints $ENDPOINT snapshot save snapshotdb
+
+ETCDCTL_API=3 etcdctl version -- run this confirm version
+
+you make need to show certs to run backup
+
+cd /etc/kubernetes/manifests/etcd.yml
+
+copy all the line from ETDCTL_API=3 .....
+
+check it works by suffix of member list
+
+backup with with full string and suffix of snapshot save "file"
+
+snapshot status "file" -w table
+
+
+ETCDCTL_API=3 etcdctl version
+
+step 1) backup
+
+ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+     --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
+     snapshot save /tmp/snapshot-pre-boot.db
+
+ Step 2) restore
+
+ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+     --name=master \
+     --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
+     --data-dir /var/lib/etcd-from-backup \
+     --initial-cluster=master=https://127.0.0.1:2380 \
+     --initial-cluster-token etcd-cluster-1 \
+     --initial-advertise-peer-urls=https://127.0.0.1:2380 \
+     snapshot restore /tmp/snapshot-pre-boot.db
+
+ Step 3) change config in pod manifest
+ /etc/kubernetes/manifests/etcd.yaml
+
+ add lines
+ --data-dir=/var/lib/etcd-from-backup
+ --initial-cluster-token=etcd-cluster-1
+
+ update volumes
+
+   volumeMounts:
+    - mountPath: /var/lib/etcd-from-backup
+      name: etcd-data
+    - mountPath: /etc/kubernetes/pki/etcd
+      name: etcd-certs
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: /var/lib/etcd-from-backup
+      type: DirectoryOrCreate
+    name: etcd-data
+  - hostPath:
+      path: /etc/kubernetes/pki/etcd
+      type: DirectoryOrCreate
+    name: etcd-certs
+
+    
+
